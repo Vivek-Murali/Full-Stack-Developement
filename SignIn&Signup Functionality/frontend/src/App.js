@@ -1,25 +1,59 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import ReactDOM from "react-dom";
+import CssBaseline from "@mui/material/CssBaseline";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Box } from "@mui/material";
+import { SnackbarProvider } from "notistack";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import SignUp from "./pages/Auth/SignUp";
+import SignIn from "./pages/Auth/SignIn";
+import AuthContextProvider from "./contexts/AuthContextProvider";
+import RequireAuth from "./components/RequireAuth";
+import RequireNotAuth from "./components/RequireNotAuth";
+import BaseLayout from "./components/BaseLayout";
+import "./index.css";
+import RequestResetPassword from "./pages/Auth/RequestResetPassword";
+import ResetPasswordConfirm from "./pages/Auth/ResetPasswordConfirm";
+import ThemeModeProvider from "./contexts/ThemeModeProvider";
+import Admin from "./pages/Admin"
+
+export default function App() {
+  return <ThemeModeProvider>
+    <CssBaseline />
+
+
+    <AuthContextProvider>
+      <SnackbarProvider>
+        <Router>
+          <Box sx={{
+            bgcolor: (theme) => theme.palette.background.default,
+            minHeight: "100vh",
+            width: "100%"
+          }}>
+            <Routes>
+
+              <Route path="/admin" element={<Admin />} />
+
+              <Route element={<RequireAuth />}>
+                <Route element={<BaseLayout />}>
+                </Route>
+
+              </Route>
+
+              <Route element={<RequireNotAuth />} >
+                <Route path="/auth/signup" element={<SignUp />} />
+                <Route path="/auth/signin" element={<SignIn />} />
+                <Route path="/auth/password-reset" element={<RequestResetPassword />} />
+                <Route path="/auth/password-reset/confirm/:uid/:token" element={<ResetPasswordConfirm />} />
+              </Route>
+
+            </Routes>
+          </Box>
+        </Router>
+      </SnackbarProvider>
+    </AuthContextProvider>
+
+  </ThemeModeProvider>
 }
 
-export default App;
+ReactDOM.render(<App />, document.getElementById("root"))
